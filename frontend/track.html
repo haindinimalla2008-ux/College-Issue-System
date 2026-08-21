@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Complaint</title>
+    <title>Track Complaint - College Issue Management System</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -20,7 +20,6 @@
 </header>
 
 <main>
-
     <section class="complaint-container">
 
         <h2>Track Your Complaint</h2>
@@ -29,6 +28,7 @@
             type="number"
             id="complaintId"
             placeholder="Enter Complaint ID"
+            required
         >
 
         <button onclick="trackComplaint()">
@@ -38,24 +38,17 @@
         <div id="result"></div>
 
     </section>
-
 </main>
 
 <script>
 
 async function trackComplaint() {
 
-    const id =
-        document.getElementById("complaintId").value;
-
-    const result =
-        document.getElementById("result");
+    const id = document.getElementById("complaintId").value;
+    const result = document.getElementById("result");
 
     if (!id) {
-
-        result.innerHTML =
-            "<p>Please enter Complaint ID.</p>";
-
+        result.innerHTML = "<p>Please enter Complaint ID.</p>";
         return;
     }
 
@@ -70,55 +63,21 @@ async function trackComplaint() {
         if (response.ok) {
 
             result.innerHTML = `
-
                 <h3>Complaint Found</h3>
 
-                <p>
-                    <strong>Complaint ID:</strong>
-                    ${data.id}
-                </p>
-
-                <p>
-                    <strong>Name:</strong>
-                    ${data.name}
-                </p>
-
-                <p>
-                    <strong>Role:</strong>
-                    ${data.role}
-                </p>
-
-                <p>
-                    <strong>Category:</strong>
-                    ${data.category}
-                </p>
-
-                <p>
-                    <strong>Location:</strong>
-                    ${data.location}
-                </p>
-
-                <p>
-                    <strong>Priority:</strong>
-                    ${data.priority}
-                </p>
-
-                <p>
-                    <strong>Description:</strong>
-                    ${data.description}
-                </p>
-
-                <p>
-                    <strong>Status:</strong>
-                    ${data.status}
-                </p>
-
+                <p><strong>Complaint ID:</strong> ${data.id}</p>
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Role:</strong> ${data.role}</p>
+                <p><strong>Category:</strong> ${data.category}</p>
+                <p><strong>Location:</strong> ${data.location}</p>
+                <p><strong>Priority:</strong> ${data.priority}</p>
+                <p><strong>Description:</strong> ${data.description}</p>
+                <p><strong>Status:</strong> ${data.status}</p>
             `;
 
         } else {
 
-            result.innerHTML =
-                "<p>Complaint not found.</p>";
+            result.innerHTML = "<p>Complaint not found.</p>";
 
         }
 
@@ -128,9 +87,7 @@ async function trackComplaint() {
 
         result.innerHTML =
             "<p>Cannot connect to the server.</p>";
-
     }
-
 }
 
 </script>
