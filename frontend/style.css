@@ -1,0 +1,260 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #333;
+}
+
+header {
+    background: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+header h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 16px;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+/* =========================
+   HOME BUTTON
+========================= */
+
+.home-button {
+    display: inline-block;
+    text-decoration: none;
+    background: #555;
+    color: white;
+    padding: 9px 16px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+}
+
+.home-button:hover {
+    background: #333;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.form-container h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 7px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    font-family: Arial, sans-serif;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #1e3a8a;
+}
+
+button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 13px;
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #162d6b;
+}
+
+#message {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+/* =========================
+   ADMIN DASHBOARD
+========================= */
+
+.dashboard-container {
+    width: 95%;
+    max-width: 1100px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-container h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 25px;
+}
+
+
+/* DASHBOARD STATISTICS */
+
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 35px;
+}
+
+.stat-card {
+    background: #f4f7fb;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.stat-card h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    font-size: 30px;
+    font-weight: bold;
+    color: #1e3a8a;
+}
+
+
+/* COMPLAINT BOX */
+
+.complaint {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.complaint:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.complaint h3 {
+    color: #1e3a8a;
+    margin-bottom: 15px;
+}
+
+.complaint p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+
+/* STATUS SELECT */
+
+.complaint select {
+    width: 200px;
+    margin-top: 10px;
+}
+
+
+/* UPDATE BUTTON */
+
+.complaint button {
+    width: 200px;
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+
+/* =========================
+   PRIORITY
+========================= */
+
+.complaint p strong {
+    font-weight: bold;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-container {
+        padding: 20px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .complaint select,
+    .complaint button {
+        width: 100%;
+        margin-left: 0;
+    }
+
+}

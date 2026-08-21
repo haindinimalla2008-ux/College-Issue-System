@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Admin Dashboard - College Issue Management System
+    </title>
+
+    <link rel="stylesheet" href="admin.css">
+
+</head>
+
+
+<body>
+
+    <header>
+
+        <h1>
+            College Issue Management System
+        </h1>
+
+        <p>
+            Administrator Dashboard
+        </p>
+
+    </header>
+
+
+    <main>
+
+        <section class="dashboard">
+
+
+            <!-- HOME -->
+
+            <a href="home.html"
+               class="home-button">
+
+                🏠 Home
+
+            </a>
+
+
+            <!-- DASHBOARD TITLE -->
+
+            <h2>
+                Dashboard Overview
+            </h2>
+
+
+            <!-- =========================
+                 STATUS STATISTICS
+            ========================== -->
+
+            <div class="stats">
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        Total Complaints
+                    </h3>
+
+                    <p id="totalComplaints">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        Pending
+                    </h3>
+
+                    <p id="pendingComplaints">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        In Progress
+                    </h3>
+
+                    <p id="progressComplaints">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        Resolved
+                    </h3>
+
+                    <p id="resolvedComplaints">
+                        0
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 PRIORITY STATISTICS
+            ========================== -->
+
+            <h2>
+                Priority Overview
+            </h2>
+
+
+            <div class="stats">
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        🔴 High Priority
+                    </h3>
+
+                    <p id="highPriorityComplaints">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        🟡 Medium Priority
+                    </h3>
+
+                    <p id="mediumPriorityComplaints">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="stat-box">
+
+                    <h3>
+                        🟢 Low Priority
+                    </h3>
+
+                    <p id="lowPriorityComplaints">
+                        0
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =========================
+                 ALL COMPLAINTS
+            ========================== -->
+
+            <h2>
+                All Complaints
+            </h2>
+
+
+            <div id="complaintsContainer">
+
+                Loading complaints...
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+    <script src="admin.js"></script>
+
+</body>
+
+</html>

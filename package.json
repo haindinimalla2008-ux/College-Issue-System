@@ -1,0 +1,14 @@
+{
+  "name": "college-issue-management-system",
+  "version": "1.0.0",
+  "description": "College Issue Management System",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Haindini",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^39.0.0"
+  }
+}
