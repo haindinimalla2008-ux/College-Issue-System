@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -9,10 +10,12 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin Dashboard - College Issue Management System</title>
+    <title>Admin Dashboard</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
@@ -21,9 +24,23 @@
     <h1>College Issue Management System</h1>
 
     <nav>
-        <a href="./index.html">Home</a>
-        <a href="./track.html">Track Complaint</a>
-        <a href="./admin.html">Admin Dashboard</a>
+
+        <a href="./index.html" class="home-button">
+            🏠 Home
+        </a>
+
+        <a href="./index.html">
+            Complaint Issue
+        </a>
+
+        <a href="./track.html">
+            Track Complaint
+        </a>
+
+        <a href="./admin.html">
+            Admin Dashboard
+        </a>
+
     </nav>
 
 </header>
@@ -35,14 +52,25 @@
 
         <h2>Administrator Dashboard</h2>
 
+
         <div id="dashboard">
-            <p>Loading complaints...</p>
+
+            <p>
+                Loading complaints...
+            </p>
+
         </div>
+
 
         <h2>All Complaints</h2>
 
+
         <div id="complaints">
-            <p>Loading complaints...</p>
+
+            <p>
+                Loading complaints...
+            </p>
+
         </div>
 
     </section>
@@ -61,62 +89,116 @@ async function loadDashboard() {
     const dashboard =
         document.getElementById("dashboard");
 
+
     const complaintsDiv =
         document.getElementById("complaints");
+
 
     try {
 
         const response =
-            await fetch(API + "/complaints");
+            await fetch(
+                API + "/complaints"
+            );
+
 
         if (!response.ok) {
-            throw new Error("Failed to load complaints");
+
+            throw new Error(
+                "Failed to load complaints"
+            );
+
         }
+
 
         const complaints =
             await response.json();
 
+
         let pending = 0;
+
         let inProgress = 0;
+
         let resolved = 0;
 
-        complaints.forEach(complaint => {
 
-            if (complaint.status === "Pending") {
-                pending++;
+        complaints.forEach(
+            complaint => {
+
+                if (
+                    complaint.status ===
+                    "Pending"
+                ) {
+
+                    pending++;
+
+                }
+
+                else if (
+                    complaint.status ===
+                    "In Progress"
+                ) {
+
+                    inProgress++;
+
+                }
+
+                else if (
+                    complaint.status ===
+                    "Resolved"
+                ) {
+
+                    resolved++;
+
+                }
+
             }
-
-            if (complaint.status === "In Progress") {
-                inProgress++;
-            }
-
-            if (complaint.status === "Resolved") {
-                resolved++;
-            }
-
-        });
+        );
 
 
         dashboard.innerHTML = `
 
             <div>
+
                 <h3>Total Complaints</h3>
-                <p>${complaints.length}</p>
+
+                <p>
+                    ${complaints.length}
+                </p>
+
             </div>
 
+
             <div>
+
                 <h3>Pending</h3>
-                <p>${pending}</p>
+
+                <p>
+                    ${pending}
+                </p>
+
             </div>
 
+
             <div>
+
                 <h3>In Progress</h3>
-                <p>${inProgress}</p>
+
+                <p>
+                    ${inProgress}
+                </p>
+
             </div>
 
+
             <div>
+
                 <h3>Resolved</h3>
-                <p>${resolved}</p>
+
+                <p>
+                    ${resolved}
+                </p>
+
             </div>
 
         `;
@@ -128,124 +210,156 @@ async function loadDashboard() {
                 "<p>No complaints found.</p>";
 
             return;
+
         }
 
 
         complaintsDiv.innerHTML = "";
 
 
-        complaints.forEach(complaint => {
+        complaints.forEach(
+            complaint => {
 
-            const div =
-                document.createElement("div");
+                const div =
+                    document.createElement("div");
 
 
-            div.innerHTML = `
+                div.innerHTML = `
 
-                <hr>
+                    <hr>
 
-                <h3>
-                    Complaint #${complaint.id}
-                </h3>
+                    <h3>
+                        Complaint #${complaint.id}
+                    </h3>
 
-                <p>
-                    <strong>Name:</strong>
-                    ${complaint.name}
-                </p>
 
-                <p>
-                    <strong>Role:</strong>
-                    ${complaint.role}
-                </p>
+                    <p>
+                        <strong>Name:</strong>
+                        ${complaint.name}
+                    </p>
 
-                <p>
-                    <strong>Category:</strong>
-                    ${complaint.category}
-                </p>
 
-                <p>
-                    <strong>Location:</strong>
-                    ${complaint.location}
-                </p>
+                    <p>
+                        <strong>Role:</strong>
+                        ${complaint.role}
+                    </p>
 
-                <p>
-                    <strong>Priority:</strong>
-                    ${complaint.priority}
-                </p>
 
-                <p>
-                    <strong>Description:</strong>
-                    ${complaint.description}
-                </p>
+                    <p>
+                        <strong>Category:</strong>
+                        ${complaint.category}
+                    </p>
 
-                <p>
-                    <strong>Status:</strong>
-                    ${complaint.status}
-                </p>
 
-                <label>
-                    Update Status:
-                </label>
+                    <p>
+                        <strong>Location:</strong>
+                        ${complaint.location}
+                    </p>
 
-                <select
-                    onchange="
-                        updateStatus(
-                            ${complaint.id},
-                            this.value
-                        )
-                    "
-                >
 
-                    <option
-                        value="Pending"
-                        ${complaint.status === "Pending"
-                            ? "selected"
-                            : ""}
+                    <p>
+                        <strong>Priority:</strong>
+                        ${complaint.priority}
+                    </p>
+
+
+                    <p>
+                        <strong>Description:</strong>
+                        ${complaint.description}
+                    </p>
+
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${complaint.status}
+                    </p>
+
+
+                    <label>
+                        Update Status:
+                    </label>
+
+
+                    <select
+                        onchange="
+                            updateStatus(
+                                ${complaint.id},
+                                this.value
+                            )
+                        "
                     >
-                        Pending
-                    </option>
 
-                    <option
-                        value="In Progress"
-                        ${complaint.status === "In Progress"
-                            ? "selected"
-                            : ""}
-                    >
-                        In Progress
-                    </option>
-
-                    <option
-                        value="Resolved"
-                        ${complaint.status === "Resolved"
-                            ? "selected"
-                            : ""}
-                    >
-                        Resolved
-                    </option>
-
-                </select>
-
-            `;
+                        <option
+                            value="Pending"
+                            ${
+                                complaint.status ===
+                                "Pending"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            Pending
+                        </option>
 
 
-            complaintsDiv.appendChild(div);
+                        <option
+                            value="In Progress"
+                            ${
+                                complaint.status ===
+                                "In Progress"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            In Progress
+                        </option>
 
-        });
+
+                        <option
+                            value="Resolved"
+                            ${
+                                complaint.status ===
+                                "Resolved"
+                                ? "selected"
+                                : ""
+                            }
+                        >
+                            Resolved
+                        </option>
+
+                    </select>
+
+                `;
 
 
-    } catch (error) {
+                complaintsDiv.appendChild(div);
+
+            }
+        );
+
+
+    }
+
+    catch (error) {
 
         console.error(error);
+
 
         dashboard.innerHTML =
             "<p>Cannot connect to the server.</p>";
 
+
         complaintsDiv.innerHTML = "";
+
     }
+
 }
 
 
-async function updateStatus(id, status) {
+async function updateStatus(
+    id,
+    status
+) {
 
     try {
 
@@ -253,6 +367,7 @@ async function updateStatus(id, status) {
             await fetch(
                 API + "/complaints/" + id,
                 {
+
                     method: "PUT",
 
                     headers: {
@@ -260,9 +375,11 @@ async function updateStatus(id, status) {
                             "application/json"
                     },
 
-                    body: JSON.stringify({
-                        status: status
-                    })
+                    body:
+                        JSON.stringify({
+                            status: status
+                        })
+
                 }
             );
 
@@ -277,25 +394,33 @@ async function updateStatus(id, status) {
                 "Complaint status updated successfully!"
             );
 
+
             loadDashboard();
 
-        } else {
+        }
+
+        else {
 
             alert(
                 data.message ||
                 "Failed to update status."
             );
+
         }
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
         console.error(error);
+
 
         alert(
             "Cannot connect to the server."
         );
+
     }
+
 }
 
 
