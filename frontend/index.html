@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Report Issue - College Issue Management System</title>
+    <title>College Issue Management System</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,31 +12,22 @@
 <body>
 
     <header>
-
         <h1>College Issue Management System</h1>
 
-        <p>Report a College Issue</p>
-
+        <nav>
+            <a href="./index.html">Home</a>
+        </nav>
     </header>
-
 
     <main>
 
-        <section class="form-container">
+        <section class="complaint-container">
 
-            <a href="home.html" class="home-button">
-                🏠 Home
-            </a>
-
-            <h2>Submit Your Issue</h2>
-
+            <h2>Submit a College Issue</h2>
 
             <form id="complaintForm">
 
-                <label for="name">
-                    Your Name
-                </label>
-
+                <label for="name">Your Name</label>
                 <input
                     type="text"
                     id="name"
@@ -45,77 +35,27 @@
                     required
                 >
 
-
-                <label for="role">
-                    Your Role
-                </label>
-
+                <label for="role">Your Role</label>
                 <select id="role" required>
-
-                    <option value="">
-                        Select your role
-                    </option>
-
-                    <option value="Student">
-                        Student
-                    </option>
-
-                    <option value="Teacher">
-                        Teacher
-                    </option>
-
-                    <option value="Administrator">
-                        Administrator
-                    </option>
-
+                    <option value="">Select Role</option>
+                    <option value="Student">Student</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Administrator">Administrator</option>
                 </select>
 
-
-                <label for="category">
-                    Issue Category
-                </label>
-
+                <label for="category">Issue Category</label>
                 <select id="category" required>
-
-                    <option value="">
-                        Select category
-                    </option>
-
-                    <option value="Infrastructure">
-                        Infrastructure
-                    </option>
-
-                    <option value="Electrical">
-                        Electrical
-                    </option>
-
-                    <option value="Water">
-                        Water
-                    </option>
-
-                    <option value="Cleanliness">
-                        Cleanliness
-                    </option>
-
-                    <option value="Safety">
-                        Safety
-                    </option>
-
-                    <option value="Academic">
-                        Academic
-                    </option>
-
-                    <option value="Other">
-                        Other
-                    </option>
-
+                    <option value="">Select Category</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Water">Water</option>
+                    <option value="Cleanliness">Cleanliness</option>
+                    <option value="Safety">Safety</option>
+                    <option value="Academic">Academic</option>
+                    <option value="Other">Other</option>
                 </select>
 
-
-                <label for="location">
-                    Location
-                </label>
-
+                <label for="location">Location</label>
                 <input
                     type="text"
                     id="location"
@@ -123,43 +63,20 @@
                     required
                 >
 
-
-                <label for="priority">
-                    Priority
-                </label>
-
+                <label for="priority">Priority</label>
                 <select id="priority" required>
-
-                    <option value="">
-                        Select priority
-                    </option>
-
-                    <option value="High">
-                        High
-                    </option>
-
-                    <option value="Medium">
-                        Medium
-                    </option>
-
-                    <option value="Low">
-                        Low
-                    </option>
-
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
                 </select>
 
-
-                <label for="description">
-                    Description
-                </label>
-
+                <label for="description">Description</label>
                 <textarea
                     id="description"
+                    placeholder="Describe the problem..."
                     rows="5"
-                    placeholder="Describe the issue"
                     required
                 ></textarea>
-
 
                 <button type="submit">
                     Submit Issue
@@ -167,16 +84,13 @@
 
             </form>
 
-
-            <div id="message"></div>
+            <p id="message"></p>
 
         </section>
 
     </main>
 
-
     <script src="script.js"></script>
 
 </body>
-
 </html>
