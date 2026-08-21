@@ -1,67 +1,71 @@
 const express = require("express");
-const mysql = require("mysql2");
+const { Pool } = require("pg");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-/* =========================
-   MYSQL CONNECTION POOL
-========================= */
+// =========================
+// POSTGRESQL CONNECTION
+// =========================
 
-const db = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "College@2026",
-    database: "college_issue_system",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
-
-db.getConnection((err, connection) => {
-
-    if (err) {
-
-        console.log(
-            "Database connection failed:",
-            err.message
-        );
-
-    } else {
-
-        console.log(
-            "MySQL database connected successfully!"
-        );
-
-        connection.release();
-
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
     }
-
 });
 
+// =========================
+// CREATE TABLE
+// =========================
 
-/* =========================
-   HOME
-========================= */
+async function createTable() {
+    try {
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS complaints (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                role VARCHAR(50) NOT NULL,
+                category VARCHAR(100) NOT NULL,
+                location VARCHAR(200) NOT NULL,
+                description TEXT NOT NULL,
+                priority VARCHAR(20) DEFAULT 'Medium',
+                status VARCHAR(30) DEFAULT 'Pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        console.log("PostgreSQL database connected successfully!");
+        console.log("Complaints table is ready!");
+
+    } catch (error) {
+        console.error("Database connection failed:", error.message);
+    }
+}
+
+createTable();
+
+// =========================
+// FRONTEND
+// =========================
+
+const frontendPath = path.join(__dirname, "..", "frontend");
+
+app.use(express.static(frontendPath));
 
 app.get("/", (req, res) => {
-
-    res.send(
-        "College Issue Management System Backend is running!"
-    );
-
+    res.sendFile(path.join(frontendPath, "home.html"));
 });
 
+// =========================
+// SUBMIT COMPLAINT
+// =========================
 
-/* =========================
-   SUBMIT COMPLAINT
-========================= */
-
-app.post("/complaints", (req, res) => {
+app.post("/complaints", async (req, res) => {
 
     const {
         name,
@@ -72,158 +76,114 @@ app.post("/complaints", (req, res) => {
         priority
     } = req.body;
 
+    const selectedPriority = priority || "Medium";
 
-    const selectedPriority =
-        priority || "Medium";
+    try {
 
+        const result = await pool.query(
+            `
+            INSERT INTO complaints
+            (name, role, category, location, description, priority)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id
+            `,
+            [
+                name,
+                role,
+                category,
+                location,
+                description,
+                selectedPriority
+            ]
+        );
 
-    const sql = `
-        INSERT INTO complaints
-        (name, role, category, location, description, priority)
-        VALUES (?, ?, ?, ?, ?, ?)
-    `;
+        res.json({
+            message: "Complaint saved successfully!",
+            complaintId: result.rows[0].id
+        });
 
+    } catch (error) {
 
-    db.query(
-        sql,
-        [
-            name,
-            role,
-            category,
-            location,
-            description,
-            selectedPriority
-        ],
-        (err, result) => {
+        console.error(error);
 
-            if (err) {
+        res.status(500).json({
+            message: "Failed to save complaint"
+        });
+    }
+});
 
-                console.log(err);
+// =========================
+// GET ALL COMPLAINTS
+// =========================
 
-                return res.status(500).json({
-                    message:
-                        "Failed to save complaint"
-                });
+app.get("/complaints", async (req, res) => {
 
-            }
+    try {
 
+        const result = await pool.query(`
+            SELECT *
+            FROM complaints
+            ORDER BY created_at DESC
+        `);
 
-            res.json({
+        res.json(result.rows);
 
-                message:
-                    "Complaint saved successfully!",
+    } catch (error) {
 
-                complaintId:
-                    result.insertId
+        console.error(error);
 
+        res.status(500).json({
+            message: "Failed to get complaints"
+        });
+    }
+});
+
+// =========================
+// GET COMPLAINT BY ID
+// =========================
+
+app.get("/complaints/:id", async (req, res) => {
+
+    const id = req.params.id;
+
+    try {
+
+        const result = await pool.query(
+            `
+            SELECT *
+            FROM complaints
+            WHERE id = $1
+            `,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+
+            return res.status(404).json({
+                message: "Complaint not found"
             });
-
         }
-    );
 
+        res.json(result.rows[0]);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to find complaint"
+        });
+    }
 });
 
+// =========================
+// UPDATE COMPLAINT STATUS
+// =========================
 
-/* =========================
-   GET ALL COMPLAINTS
-========================= */
-
-app.get("/complaints", (req, res) => {
-
-    const sql = `
-        SELECT *
-        FROM complaints
-        ORDER BY created_at DESC
-    `;
-
-
-    db.query(
-        sql,
-        (err, results) => {
-
-            if (err) {
-
-                console.log(err);
-
-                return res.status(500).json({
-                    message:
-                        "Failed to get complaints"
-                });
-
-            }
-
-
-            res.json(results);
-
-        }
-    );
-
-});
-
-
-/* =========================
-   GET COMPLAINT BY ID
-========================= */
-
-app.get("/complaints/:id", (req, res) => {
+app.put("/complaints/:id", async (req, res) => {
 
     const id = req.params.id;
-
-
-    const sql = `
-        SELECT *
-        FROM complaints
-        WHERE id = ?
-    `;
-
-
-    db.query(
-        sql,
-        [id],
-        (err, results) => {
-
-            if (err) {
-
-                console.log(err);
-
-                return res.status(500).json({
-                    message:
-                        "Failed to find complaint"
-                });
-
-            }
-
-
-            if (results.length === 0) {
-
-                return res.status(404).json({
-                    message:
-                        "Complaint not found"
-                });
-
-            }
-
-
-            res.json(results[0]);
-
-        }
-    );
-
-});
-
-
-/* =========================
-   UPDATE COMPLAINT STATUS
-========================= */
-
-app.put("/complaints/:id", (req, res) => {
-
-    const id = req.params.id;
-
     const { status } = req.body;
-
-
-    /* Validate status */
 
     const allowedStatuses = [
         "Pending",
@@ -231,79 +191,57 @@ app.put("/complaints/:id", (req, res) => {
         "Resolved"
     ];
 
-
     if (!allowedStatuses.includes(status)) {
 
         return res.status(400).json({
-            message:
-                "Invalid complaint status"
+            message: "Invalid complaint status"
         });
-
     }
 
+    try {
 
-    const sql = `
-        UPDATE complaints
-        SET status = ?
-        WHERE id = ?
-    `;
+        const result = await pool.query(
+            `
+            UPDATE complaints
+            SET status = $1
+            WHERE id = $2
+            `,
+            [status, id]
+        );
 
+        if (result.rowCount === 0) {
 
-    db.query(
-        sql,
-        [status, id],
-        (err, result) => {
-
-            if (err) {
-
-                console.log(err);
-
-                return res.status(500).json({
-                    message:
-                        "Failed to update status"
-                });
-
-            }
-
-
-            if (result.affectedRows === 0) {
-
-                return res.status(404).json({
-                    message:
-                        "Complaint not found"
-                });
-
-            }
-
-
-            res.json({
-
-                message:
-                    "Complaint status updated successfully!",
-
-                complaintId: id,
-
-                status: status
-
+            return res.status(404).json({
+                message: "Complaint not found"
             });
-
         }
+
+        res.json({
+            message: "Complaint status updated successfully!",
+            complaintId: id,
+            status: status
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to update status"
+        });
+    }
+});
+
+// =========================
+// START SERVER
+// =========================
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+
+    console.log(
+        `College Issue Management System running on port ${PORT}`
     );
 
 });
-
-
-/* =========================
-   START SERVER
-========================= */
-
-app.listen(
-    3000,
-    () => {
-
-        console.log(
-            "Server running at http://localhost:3000"
-        );
-
-    }
-);
