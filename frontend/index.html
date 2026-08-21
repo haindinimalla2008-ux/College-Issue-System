@@ -16,6 +16,8 @@
 
         <nav>
             <a href="./index.html">Home</a>
+            <a href="./track.html">Track Complaint</a>
+            <a href="./admin.html">Admin Dashboard</a>
         </nav>
     </header>
 
@@ -28,6 +30,7 @@
             <form id="complaintForm">
 
                 <label for="name">Your Name</label>
+
                 <input
                     type="text"
                     id="name"
@@ -36,6 +39,7 @@
                 >
 
                 <label for="role">Your Role</label>
+
                 <select id="role" required>
                     <option value="">Select Role</option>
                     <option value="Student">Student</option>
@@ -44,6 +48,7 @@
                 </select>
 
                 <label for="category">Issue Category</label>
+
                 <select id="category" required>
                     <option value="">Select Category</option>
                     <option value="Infrastructure">Infrastructure</option>
@@ -56,6 +61,7 @@
                 </select>
 
                 <label for="location">Location</label>
+
                 <input
                     type="text"
                     id="location"
@@ -64,6 +70,7 @@
                 >
 
                 <label for="priority">Priority</label>
+
                 <select id="priority" required>
                     <option value="Low">Low</option>
                     <option value="Medium" selected>Medium</option>
@@ -71,10 +78,11 @@
                 </select>
 
                 <label for="description">Description</label>
+
                 <textarea
                     id="description"
-                    placeholder="Describe the problem..."
                     rows="5"
+                    placeholder="Describe the problem..."
                     required
                 ></textarea>
 
