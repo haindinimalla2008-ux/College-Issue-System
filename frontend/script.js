@@ -1,7 +1,7 @@
 const form = document.getElementById("complaintForm");
 const result = document.getElementById("message");
 
-form.addEventListener("submit", async function(event) {
+form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const complaint = {
@@ -14,9 +14,8 @@ form.addEventListener("submit", async function(event) {
     };
 
     try {
-
         const response = await fetch(
-            "http://localhost:3000/complaints",
+            "https://college-issue-system.onrender.com/complaints",
             {
                 method: "POST",
 
@@ -31,26 +30,20 @@ form.addEventListener("submit", async function(event) {
         const data = await response.json();
 
         if (response.ok) {
-
             result.innerHTML =
-                "Issue submitted successfully! Complaint ID: "
-                + data.complaintId;
+                "Issue submitted successfully! Complaint ID: " +
+                data.complaintId;
 
             form.reset();
-
         } else {
-
             result.innerHTML =
                 data.message || "Failed to submit issue.";
-
         }
 
     } catch (error) {
-
         console.error(error);
 
         result.innerHTML =
             "Cannot connect to the server.";
-
     }
 });
