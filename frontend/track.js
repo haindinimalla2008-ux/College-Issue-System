@@ -10,12 +10,12 @@ trackForm.addEventListener("submit", async function (event) {
 
     if (!id) {
         result.innerHTML =
-            '<p class="error">Please enter a Complaint ID.</p>';
+            "<p>Please enter a Complaint ID.</p>";
         return;
     }
 
     result.innerHTML =
-        "<p>🔎 Searching for complaint...</p>";
+        "<p>Searching for complaint...</p>";
 
     try {
 
@@ -28,7 +28,7 @@ trackForm.addEventListener("submit", async function (event) {
         if (!response.ok) {
 
             result.innerHTML =
-                `<p class="error">${data.message || "Complaint not found."}</p>`;
+                "<p>" + (data.message || "Complaint not found.") + "</p>";
 
             return;
         }
@@ -43,60 +43,24 @@ trackForm.addEventListener("submit", async function (event) {
             priorityIcon = "🟢";
         }
 
-        result.innerHTML = `
-
-            <div class="success">
-
-                <h3>
-                    Complaint #${data.id}
-                </h3>
-
-                <p>
-                    <strong>Name:</strong>
-                    ${data.name}
-                </p>
-
-                <p>
-                    <strong>Role:</strong>
-                    ${data.role}
-                </p>
-
-                <p>
-                    <strong>Category:</strong>
-                    ${data.category}
-                </p>
-
-                <p>
-                    <strong>Location:</strong>
-                    ${data.location}
-                </p>
-
-                <p>
-                    <strong>Priority:</strong>
-                    ${priorityIcon}
-                    ${data.priority || "Medium"}
-                </p>
-
-                <p>
-                    <strong>Description:</strong>
-                    ${data.description}
-                </p>
-
-                <p>
-                    <strong>Status:</strong>
-                    ${data.status}
-                </p>
-
-            </div>
-
-        `;
+        result.innerHTML =
+            "<div>" +
+            "<h3>Complaint #" + data.id + "</h3>" +
+            "<p><strong>Name:</strong> " + data.name + "</p>" +
+            "<p><strong>Role:</strong> " + data.role + "</p>" +
+            "<p><strong>Category:</strong> " + data.category + "</p>" +
+            "<p><strong>Location:</strong> " + data.location + "</p>" +
+            "<p><strong>Priority:</strong> " + priorityIcon + " " + data.priority + "</p>" +
+            "<p><strong>Description:</strong> " + data.description + "</p>" +
+            "<p><strong>Status:</strong> " + data.status + "</p>" +
+            "</div>";
 
     } catch (error) {
 
         console.error(error);
 
         result.innerHTML =
-            '<p class="error">❌ Cannot connect to the server.</p>';
+            "<p>Cannot connect to the server.</p>";
     }
 
 });
