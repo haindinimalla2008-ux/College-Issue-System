@@ -9,13 +9,11 @@ trackForm.addEventListener("submit", async function (event) {
     const id = document.getElementById("complaintId").value.trim();
 
     if (!id) {
-        result.innerHTML =
-            "<p>Please enter a Complaint ID.</p>";
+        result.innerHTML = "<p>Please enter a Complaint ID.</p>";
         return;
     }
 
-    result.innerHTML =
-        "<p>Searching for complaint...</p>";
+    result.innerHTML = "<p>Searching for complaint...</p>";
 
     try {
 
@@ -33,15 +31,7 @@ trackForm.addEventListener("submit", async function (event) {
             return;
         }
 
-        let priorityIcon = "🟡";
-
-        if (data.priority === "High") {
-            priorityIcon = "🔴";
-        }
-
-        if (data.priority === "Low") {
-            priorityIcon = "🟢";
-        }
+        let priorityText = data.priority || "Medium";
 
         result.innerHTML =
             "<div>" +
@@ -50,7 +40,7 @@ trackForm.addEventListener("submit", async function (event) {
             "<p><strong>Role:</strong> " + data.role + "</p>" +
             "<p><strong>Category:</strong> " + data.category + "</p>" +
             "<p><strong>Location:</strong> " + data.location + "</p>" +
-            "<p><strong>Priority:</strong> " + priorityIcon + " " + data.priority + "</p>" +
+            "<p><strong>Priority:</strong> " + priorityText + "</p>" +
             "<p><strong>Description:</strong> " + data.description + "</p>" +
             "<p><strong>Status:</strong> " + data.status + "</p>" +
             "</div>";
