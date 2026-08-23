@@ -1,18 +1,24 @@
+```javascript
 async function trackComplaint() {
 
-    const id = document.getElementById("complaintId").value;
+    const id = document.getElementById("complaintId").value.trim();
     const result = document.getElementById("result");
 
     if (!id) {
+
         result.innerHTML =
             '<p class="error">Please enter a Complaint ID.</p>';
+
         return;
     }
+
+    result.innerHTML =
+        '<p>🔎 Searching for complaint...</p>';
 
     try {
 
         const response = await fetch(
-            `http://localhost:3000/complaints/${id}`
+            `https://college-issue-system.onrender.com/complaints/${id}`
         );
 
         const data = await response.json();
@@ -20,13 +26,10 @@ async function trackComplaint() {
         if (!response.ok) {
 
             result.innerHTML =
-                `<p class="error">${data.message}</p>`;
+                `<p class="error">${data.message || "Complaint not found."}</p>`;
 
             return;
         }
-
-
-        // Priority icon
 
         let priorityIcon = "🟡";
 
@@ -38,9 +41,6 @@ async function trackComplaint() {
             priorityIcon = "🟢";
         }
 
-
-        // Display complaint
-
         result.innerHTML = `
 
             <div class="success">
@@ -48,6 +48,16 @@ async function trackComplaint() {
                 <h3>
                     Complaint #${data.id}
                 </h3>
+
+                <p>
+                    <strong>Name:</strong>
+                    ${data.name}
+                </p>
+
+                <p>
+                    <strong>Role:</strong>
+                    ${data.role}
+                </p>
 
                 <p>
                     <strong>Category:</strong>
@@ -84,7 +94,8 @@ async function trackComplaint() {
         console.error(error);
 
         result.innerHTML =
-            '<p class="error">Cannot connect to the server.</p>';
+            '<p class="error">❌ Cannot connect to the server.</p>';
 
     }
 }
+```
