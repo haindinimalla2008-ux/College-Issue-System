@@ -1,3 +1,4 @@
+```html id="v0l5jp"
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,17 +6,13 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Track Complaint</title>
 
     <link rel="stylesheet" href="style.css">
 
 </head>
-
 
 <body>
 
@@ -25,20 +22,20 @@
 
     <nav>
 
-        <a href="./index.html" class="home-button">
+        <a href="home.html">
             🏠 Home
         </a>
 
-        <a href="./index.html">
-            Complaint Issue
+        <a href="index.html">
+            📝 Complaint Issue
         </a>
 
-        <a href="./track.html">
-            Track Complaint
+        <a href="track.html">
+            🔎 Track Complaint
         </a>
 
-        <a href="./admin.html">
-            Admin Dashboard
+        <a href="admin.html">
+            📊 Admin Dashboard
         </a>
 
     </nav>
@@ -53,16 +50,24 @@
         <h2>Track Your Complaint</h2>
 
 
-        <input
-            type="number"
-            id="complaintId"
-            placeholder="Enter Complaint ID"
-        >
+        <form id="trackForm">
 
+            <label for="complaintId">
+                Complaint ID
+            </label>
 
-        <button onclick="trackComplaint()">
-            Track Complaint
-        </button>
+            <input
+                type="number"
+                id="complaintId"
+                placeholder="Enter Complaint ID"
+                required
+            >
+
+            <button type="submit">
+                Track Complaint
+            </button>
+
+        </form>
 
 
         <div id="result"></div>
@@ -72,112 +77,9 @@
 </main>
 
 
-<script>
-
-async function trackComplaint() {
-
-    const id =
-        document.getElementById("complaintId").value;
-
-
-    const result =
-        document.getElementById("result");
-
-
-    if (!id) {
-
-        result.innerHTML =
-            "<p>Please enter Complaint ID.</p>";
-
-        return;
-
-    }
-
-
-    try {
-
-        const response =
-            await fetch(
-                "https://college-issue-system.onrender.com/complaints/" +
-                id
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (response.ok) {
-
-            result.innerHTML = `
-
-                <h3>Complaint Found</h3>
-
-                <p>
-                    <strong>Complaint ID:</strong>
-                    ${data.id}
-                </p>
-
-                <p>
-                    <strong>Name:</strong>
-                    ${data.name}
-                </p>
-
-                <p>
-                    <strong>Role:</strong>
-                    ${data.role}
-                </p>
-
-                <p>
-                    <strong>Category:</strong>
-                    ${data.category}
-                </p>
-
-                <p>
-                    <strong>Location:</strong>
-                    ${data.location}
-                </p>
-
-                <p>
-                    <strong>Priority:</strong>
-                    ${data.priority}
-                </p>
-
-                <p>
-                    <strong>Description:</strong>
-                    ${data.description}
-                </p>
-
-                <p>
-                    <strong>Status:</strong>
-                    ${data.status}
-                </p>
-
-            `;
-
-        }
-
-        else {
-
-            result.innerHTML =
-                "<p>Complaint not found.</p>";
-
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        result.innerHTML =
-            "<p>Cannot connect to the server.</p>";
-
-    }
-
-}
-
-</script>
+<script src="track.js"></script>
 
 </body>
+
 </html>
+```

@@ -22,20 +22,20 @@
 
     <nav>
 
-        <a href="index.html">
+        <a href="home.html">
             🏠 Home
         </a>
 
         <a href="index.html">
-            Complaint Issue
+            📝 Complaint Issue
         </a>
 
         <a href="track.html">
-            Track Complaint
+            🔎 Track Complaint
         </a>
 
         <a href="admin.html">
-            Admin Dashboard
+            📊 Admin Dashboard
         </a>
 
     </nav>
@@ -51,7 +51,20 @@
 
         <div id="dashboard">
 
-            <p>Loading dashboard...</p>
+            <p>
+                Loading dashboard...
+            </p>
+
+        </div>
+
+
+        <h2>All Complaints</h2>
+
+        <div id="complaints">
+
+            <p>
+                Loading complaints...
+            </p>
 
         </div>
 
@@ -60,135 +73,7 @@
 </main>
 
 
-<script>
-
-const API =
-    "https://college-issue-system.onrender.com";
-
-
-async function loadDashboard() {
-
-    const dashboard =
-        document.getElementById("dashboard");
-
-
-    try {
-
-        const response =
-            await fetch(API + "/complaints");
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Failed to load complaints"
-            );
-
-        }
-
-
-        const complaints =
-            await response.json();
-
-
-        let pending = 0;
-
-        let inProgress = 0;
-
-        let resolved = 0;
-
-
-        complaints.forEach(complaint => {
-
-            if (complaint.status === "Pending") {
-
-                pending++;
-
-            }
-
-            else if (
-                complaint.status === "In Progress"
-            ) {
-
-                inProgress++;
-
-            }
-
-            else if (
-                complaint.status === "Resolved"
-            ) {
-
-                resolved++;
-
-            }
-
-        });
-
-
-        dashboard.innerHTML = `
-
-            <div>
-
-                <h3>Total Complaints</h3>
-
-                <p>
-                    ${complaints.length}
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <h3>Pending</h3>
-
-                <p>
-                    ${pending}
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <h3>In Progress</h3>
-
-                <p>
-                    ${inProgress}
-                </p>
-
-            </div>
-
-
-            <div>
-
-                <h3>Resolved</h3>
-
-                <p>
-                    ${resolved}
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        dashboard.innerHTML =
-            "<p>Cannot connect to the server.</p>";
-
-    }
-
-}
-
-
-loadDashboard();
-
-</script>
+<script src="admin.js"></script>
 
 </body>
 
