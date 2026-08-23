@@ -1,195 +1,69 @@
-```html
-<!DOCTYPE html>
-<html lang="en">
+```javascript
+document.addEventListener("DOMContentLoaded", function () {
 
-<head>
+    const form = document.getElementById("complaintForm");
+    const result = document.getElementById("message");
 
-    <meta charset="UTF-8">
+    if (!form) {
+        console.error("Complaint form not found.");
+        return;
+    }
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    form.addEventListener("submit", async function (event) {
 
-    <title>College Issue Management System</title>
+        event.preventDefault();
 
-    <link rel="stylesheet" href="style.css">
+        result.textContent = "Submitting issue...";
 
-</head>
+        const complaint = {
+            name: document.getElementById("name").value.trim(),
+            role: document.getElementById("role").value,
+            category: document.getElementById("category").value,
+            location: document.getElementById("location").value.trim(),
+            priority: document.getElementById("priority").value,
+            description: document.getElementById("description").value.trim()
+        };
 
+        try {
 
-<body>
+            const response = await fetch(
+                "https://college-issue-system.onrender.com/complaints",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(complaint)
+                }
+            );
 
-<header>
+            const data = await response.json();
 
-    <h1>College Issue Management System</h1>
+            if (response.ok) {
 
-    <nav>
+                result.textContent =
+                    "Issue submitted successfully! Complaint ID: " +
+                    data.complaintId;
 
-        <a href="home.html">
-            🏠 Home
-        </a>
+                form.reset();
 
-        <a href="index.html">
-            📝 Complaint Issue
-        </a>
+            } else {
 
-        <a href="track.html">
-            🔎 Track Complaint
-        </a>
+                result.textContent =
+                    data.message || "Failed to submit issue.";
 
-        <a href="admin.html">
-            📊 Admin Dashboard
-        </a>
+            }
 
-    </nav>
+        } catch (error) {
 
-</header>
+            console.error("Error:", error);
 
+            result.textContent =
+                "Cannot connect to the server.";
 
-<main>
+        }
 
-    <section class="complaint-container">
+    });
 
-        <h2>Submit a College Issue</h2>
-
-
-        <form id="complaintForm">
-
-            <label for="name">
-                Your Name
-            </label>
-
-            <input
-                type="text"
-                id="name"
-                required
-            >
-
-
-            <label for="role">
-                Your Role
-            </label>
-
-            <select id="role" required>
-
-                <option value="">
-                    Select Role
-                </option>
-
-                <option value="Student">
-                    Student
-                </option>
-
-                <option value="Teacher">
-                    Teacher
-                </option>
-
-                <option value="Administrator">
-                    Administrator
-                </option>
-
-            </select>
-
-
-            <label for="category">
-                Issue Category
-            </label>
-
-            <select id="category" required>
-
-                <option value="">
-                    Select Category
-                </option>
-
-                <option value="Infrastructure">
-                    Infrastructure
-                </option>
-
-                <option value="Electrical">
-                    Electrical
-                </option>
-
-                <option value="Water">
-                    Water
-                </option>
-
-                <option value="Cleanliness">
-                    Cleanliness
-                </option>
-
-                <option value="Safety">
-                    Safety
-                </option>
-
-                <option value="Academic">
-                    Academic
-                </option>
-
-                <option value="Other">
-                    Other
-                </option>
-
-            </select>
-
-
-            <label for="location">
-                Location
-            </label>
-
-            <input
-                type="text"
-                id="location"
-                required
-            >
-
-
-            <label for="priority">
-                Priority
-            </label>
-
-            <select id="priority" required>
-
-                <option value="Low">
-                    🟢 Low
-                </option>
-
-                <option value="Medium" selected>
-                    🟡 Medium
-                </option>
-
-                <option value="High">
-                    🔴 High
-                </option>
-
-            </select>
-
-
-            <label for="description">
-                Description
-            </label>
-
-            <textarea
-                id="description"
-                rows="5"
-                required
-            ></textarea>
-
-
-            <button type="submit">
-                Submit Issue
-            </button>
-
-        </form>
-
-
-        <p id="message"></p>
-
-    </section>
-
-</main>
-
-
-<script src="script.js"></script>
-
-</body>
-
-</html>
+});
 ```
