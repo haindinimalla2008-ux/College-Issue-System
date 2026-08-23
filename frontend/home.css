@@ -1,85 +1,126 @@
+```css
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
     background: #f4f7fb;
-    color: #333;
+    color: #222;
 }
 
 header {
     background: #1e3a8a;
     color: white;
+    padding: 25px 20px;
     text-align: center;
-    padding: 35px 20px;
 }
 
 header h1 {
+    margin: 0;
     font-size: 32px;
-    margin-bottom: 10px;
 }
 
-header p {
-    font-size: 17px;
+nav {
+    margin-top: 18px;
+}
+
+nav a {
+    display: inline-block;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 8px 14px;
+}
+
+nav a:hover {
+    text-decoration: underline;
 }
 
 main {
-    padding: 50px 20px;
+    min-height: calc(100vh - 150px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
 }
 
-.welcome {
-    max-width: 1000px;
-    margin: auto;
+.complaint-container {
+    width: 100%;
+    max-width: 1100px;
     text-align: center;
 }
 
-.welcome h2 {
-    color: #1e3a8a;
-    font-size: 28px;
+.complaint-container h2 {
+    font-size: 36px;
     margin-bottom: 10px;
 }
 
-.welcome > p {
-    margin-bottom: 35px;
+.complaint-container > p {
+    font-size: 20px;
+    margin-bottom: 40px;
 }
 
-.cards {
+.home-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.home-card {
     display: flex;
+    flex-direction: column;
     justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
-}
-
-.card {
+    min-height: 250px;
+    padding: 35px 25px;
     background: white;
-    width: 280px;
-    padding: 30px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    text-decoration: none;
+    color: #222;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card h3 {
-    color: #1e3a8a;
+.home-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.home-card h3 {
+    font-size: 27px;
     margin-bottom: 15px;
 }
 
-.card p {
-    margin-bottom: 25px;
+.home-card p {
+    font-size: 18px;
     line-height: 1.5;
 }
 
-.card a {
-    display: inline-block;
-    text-decoration: none;
-    background: #1e3a8a;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 6px;
-}
+@media (max-width: 800px) {
 
-.card a:hover {
-    background: #162d6b;
+    header h1 {
+        font-size: 26px;
+    }
+
+    nav a {
+        font-size: 16px;
+        margin: 6px 8px;
+    }
+
+    .home-options {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .home-card {
+        min-height: 180px;
+    }
+
+    .complaint-container h2 {
+        font-size: 30px;
+    }
+
 }
+```
