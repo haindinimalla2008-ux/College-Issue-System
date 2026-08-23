@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,17 +6,13 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Admin Dashboard</title>
 
     <link rel="stylesheet" href="style.css">
 
 </head>
-
 
 <body>
 
@@ -25,19 +22,19 @@
 
     <nav>
 
-        <a href="./index.html" class="home-button">
+        <a href="index.html">
             🏠 Home
         </a>
 
-        <a href="./index.html">
+        <a href="index.html">
             Complaint Issue
         </a>
 
-        <a href="./track.html">
+        <a href="track.html">
             Track Complaint
         </a>
 
-        <a href="./admin.html">
+        <a href="admin.html">
             Admin Dashboard
         </a>
 
@@ -52,24 +49,9 @@
 
         <h2>Administrator Dashboard</h2>
 
-
         <div id="dashboard">
 
-            <p>
-                Loading complaints...
-            </p>
-
-        </div>
-
-
-        <h2>All Complaints</h2>
-
-
-        <div id="complaints">
-
-            <p>
-                Loading complaints...
-            </p>
+            <p>Loading dashboard...</p>
 
         </div>
 
@@ -90,16 +72,10 @@ async function loadDashboard() {
         document.getElementById("dashboard");
 
 
-    const complaintsDiv =
-        document.getElementById("complaints");
-
-
     try {
 
         const response =
-            await fetch(
-                API + "/complaints"
-            );
+            await fetch(API + "/complaints");
 
 
         if (!response.ok) {
@@ -122,38 +98,31 @@ async function loadDashboard() {
         let resolved = 0;
 
 
-        complaints.forEach(
-            complaint => {
+        complaints.forEach(complaint => {
 
-                if (
-                    complaint.status ===
-                    "Pending"
-                ) {
+            if (complaint.status === "Pending") {
 
-                    pending++;
-
-                }
-
-                else if (
-                    complaint.status ===
-                    "In Progress"
-                ) {
-
-                    inProgress++;
-
-                }
-
-                else if (
-                    complaint.status ===
-                    "Resolved"
-                ) {
-
-                    resolved++;
-
-                }
+                pending++;
 
             }
-        );
+
+            else if (
+                complaint.status === "In Progress"
+            ) {
+
+                inProgress++;
+
+            }
+
+            else if (
+                complaint.status === "Resolved"
+            ) {
+
+                resolved++;
+
+            }
+
+        });
 
 
         dashboard.innerHTML = `
@@ -203,221 +172,14 @@ async function loadDashboard() {
 
         `;
 
-
-        if (complaints.length === 0) {
-
-            complaintsDiv.innerHTML =
-                "<p>No complaints found.</p>";
-
-            return;
-
-        }
-
-
-        complaintsDiv.innerHTML = "";
-
-
-        complaints.forEach(
-            complaint => {
-
-                const div =
-                    document.createElement("div");
-
-
-                div.innerHTML = `
-
-                    <hr>
-
-                    <h3>
-                        Complaint #${complaint.id}
-                    </h3>
-
-
-                    <p>
-                        <strong>Name:</strong>
-                        ${complaint.name}
-                    </p>
-
-
-                    <p>
-                        <strong>Role:</strong>
-                        ${complaint.role}
-                    </p>
-
-
-                    <p>
-                        <strong>Category:</strong>
-                        ${complaint.category}
-                    </p>
-
-
-                    <p>
-                        <strong>Location:</strong>
-                        ${complaint.location}
-                    </p>
-
-
-                    <p>
-                        <strong>Priority:</strong>
-                        ${complaint.priority}
-                    </p>
-
-
-                    <p>
-                        <strong>Description:</strong>
-                        ${complaint.description}
-                    </p>
-
-
-                    <p>
-                        <strong>Status:</strong>
-                        ${complaint.status}
-                    </p>
-
-
-                    <label>
-                        Update Status:
-                    </label>
-
-
-                    <select
-                        onchange="
-                            updateStatus(
-                                ${complaint.id},
-                                this.value
-                            )
-                        "
-                    >
-
-                        <option
-                            value="Pending"
-                            ${
-                                complaint.status ===
-                                "Pending"
-                                ? "selected"
-                                : ""
-                            }
-                        >
-                            Pending
-                        </option>
-
-
-                        <option
-                            value="In Progress"
-                            ${
-                                complaint.status ===
-                                "In Progress"
-                                ? "selected"
-                                : ""
-                            }
-                        >
-                            In Progress
-                        </option>
-
-
-                        <option
-                            value="Resolved"
-                            ${
-                                complaint.status ===
-                                "Resolved"
-                                ? "selected"
-                                : ""
-                            }
-                        >
-                            Resolved
-                        </option>
-
-                    </select>
-
-                `;
-
-
-                complaintsDiv.appendChild(div);
-
-            }
-        );
-
-
     }
 
     catch (error) {
 
         console.error(error);
-
 
         dashboard.innerHTML =
             "<p>Cannot connect to the server.</p>";
-
-
-        complaintsDiv.innerHTML = "";
-
-    }
-
-}
-
-
-async function updateStatus(
-    id,
-    status
-) {
-
-    try {
-
-        const response =
-            await fetch(
-                API + "/complaints/" + id,
-                {
-
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            status: status
-                        })
-
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (response.ok) {
-
-            alert(
-                "Complaint status updated successfully!"
-            );
-
-
-            loadDashboard();
-
-        }
-
-        else {
-
-            alert(
-                data.message ||
-                "Failed to update status."
-            );
-
-        }
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-
-        alert(
-            "Cannot connect to the server."
-        );
 
     }
 
@@ -429,4 +191,6 @@ loadDashboard();
 </script>
 
 </body>
+
 </html>
+```
