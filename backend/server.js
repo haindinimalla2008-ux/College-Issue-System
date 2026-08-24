@@ -1,3 +1,4 @@
+```javascript
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
@@ -172,6 +173,27 @@ app.put("/complaints/:id", async (req, res) => {
     }
 });
 
+// TEMPORARY: DELETE ALL OLD COMPLAINTS
+app.delete("/delete-all-complaints", async (req, res) => {
+
+    try {
+
+        await pool.query("DELETE FROM complaints");
+
+        res.json({
+            message: "All complaints deleted successfully!"
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to delete complaints"
+        });
+    }
+});
+
 // START SERVER
 const PORT = process.env.PORT || 3000;
 
@@ -180,3 +202,4 @@ app.listen(PORT, () => {
         `College Issue Management System running on port ${PORT}`
     );
 });
+```
