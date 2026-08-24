@@ -1,161 +1,241 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* ================================
+   ADMIN DASHBOARD
+================================ */
 
 body {
     font-family: Arial, sans-serif;
     background: #f4f7fb;
     color: #333;
+    margin: 0;
 }
+
+
+/* ================================
+   HEADER
+================================ */
 
 header {
     background: #1e3a8a;
     color: white;
+    padding: 20px;
     text-align: center;
-    padding: 30px 20px;
 }
 
 header h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
+    margin: 0 0 15px;
+    font-size: 28px;
 }
 
-header p {
-    font-size: 16px;
+
+/* ================================
+   NAVIGATION
+================================ */
+
+nav {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
+
+nav a {
+    color: white;
+    text-decoration: none;
+    background: rgba(255,255,255,0.15);
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+nav a:hover {
+    background: white;
+    color: #1e3a8a;
+}
+
+
+/* ================================
+   MAIN CONTAINER
+================================ */
 
 main {
-    padding: 40px 20px;
-}
-
-.dashboard {
     max-width: 1100px;
-    margin: auto;
+    margin: 30px auto;
+    padding: 0 20px;
 }
 
-
-/* HOME BUTTON */
-
-.home-button {
-    display: inline-block;
-    text-decoration: none;
-    background: #555;
-    color: white;
-    padding: 9px 16px;
-    border-radius: 6px;
-    margin-bottom: 25px;
+.complaint-container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
 }
 
-.home-button:hover {
-    background: #333;
-}
-
-
-/* HEADINGS */
-
-.dashboard > h2 {
+.complaint-container > h2 {
     text-align: center;
     color: #1e3a8a;
     margin-bottom: 25px;
 }
 
 
-/* STATISTICS */
+/* ================================
+   DASHBOARD STATISTICS
+================================ */
 
-.stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+#dashboard {
     margin-bottom: 40px;
 }
 
-.stat-box {
-    background: white;
-    padding: 25px;
-    text-align: center;
+.dashboard-box {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.dashboard-box > div {
+    background: #f8fafc;
+    padding: 22px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
-.stat-box h3 {
-    color: #1e3a8a;
+.dashboard-box h3 {
+    margin: 0 0 10px;
     font-size: 17px;
-    margin-bottom: 12px;
+    color: #475569;
 }
 
-.stat-box p {
+.dashboard-box p {
+    margin: 0;
     font-size: 32px;
     font-weight: bold;
-    color: #333;
-}
-
-
-/* COMPLAINT */
-
-.complaint {
-    background: white;
-    margin-bottom: 20px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.complaint h3 {
     color: #1e3a8a;
-    margin-bottom: 15px;
 }
 
-.complaint p {
-    margin-bottom: 8px;
+
+/* ================================
+   COMPLAINT CARDS
+================================ */
+
+#complaints {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 }
 
-.complaint select {
-    width: 100%;
-    max-width: 300px;
-    padding: 10px;
-    margin-top: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 15px;
+.admin-complaint {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transition: 0.2s;
 }
 
-.complaint button {
+.admin-complaint:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 18px rgba(0,0,0,0.10);
+}
+
+.admin-complaint hr {
+    display: none;
+}
+
+.admin-complaint h3 {
+    margin-top: 0;
+    color: #1e3a8a;
+    font-size: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 12px;
+}
+
+.admin-complaint p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.admin-complaint strong {
+    color: #475569;
+}
+
+
+/* ================================
+   STATUS DROPDOWN
+================================ */
+
+.admin-complaint label {
     display: block;
-    margin-top: 12px;
-    padding: 11px 20px;
-    background: #1e3a8a;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    margin-top: 18px;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+.admin-complaint select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
     font-size: 15px;
+    cursor: pointer;
 }
 
-.complaint button:hover {
-    background: #162d6b;
+.admin-complaint select:focus {
+    outline: none;
+    border-color: #1e3a8a;
 }
 
 
-/* MOBILE */
+/* ================================
+   MOBILE RESPONSIVE
+================================ */
 
 @media (max-width: 800px) {
 
-    .stats {
+    .dashboard-box {
         grid-template-columns: repeat(2, 1fr);
     }
 
-}
-
-@media (max-width: 500px) {
-
-    .stats {
+    #complaints {
         grid-template-columns: 1fr;
     }
 
     header h1 {
-        font-size: 25px;
+        font-size: 22px;
     }
 
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    nav a {
+        text-align: center;
+    }
+
+    .complaint-container {
+        padding: 20px;
+    }
+}
+
+
+@media (max-width: 500px) {
+
+    main {
+        margin: 15px auto;
+        padding: 0 10px;
+    }
+
+    .dashboard-box {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-box p {
+        font-size: 28px;
+    }
+
+    .admin-complaint {
+        padding: 17px;
+    }
 }
