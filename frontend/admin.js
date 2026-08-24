@@ -1,466 +1,216 @@
-async function loadComplaints() {
+const API = "https://college-issue-system.onrender.com";
 
-    const container =
-        document.getElementById("complaintsContainer");
+async function loadDashboard() {
 
+    const dashboard = document.getElementById("dashboard");
+    const complaintsDiv = document.getElementById("complaints");
 
     try {
 
-        const response = await fetch(
-            "http://localhost:3000/complaints"
-        );
-
+        const response = await fetch(API + "/complaints");
 
         if (!response.ok) {
-
-            throw new Error(
-                "Failed to load complaints"
-            );
-
+            throw new Error("Failed to load complaints");
         }
 
+        const complaints = await response.json();
 
-        const complaints =
-            await response.json();
-
-
-        container.innerHTML = "";
-
-
-        // =========================
-        // PRIORITY SORTING
-        // =========================
-
-        const priorityOrder = {
-
-            "High": 1,
-            "Medium": 2,
-            "Low": 3
-
-        };
-
-
-        complaints.sort((a, b) => {
-
-            return (
-                (priorityOrder[a.priority] || 2) -
-                (priorityOrder[b.priority] || 2)
-            );
-
-        });
-
-
-        // =========================
-        // STATISTICS
-        // =========================
-
-        updateStatistics(complaints);
-
-
-        // =========================
-        // DISPLAY COMPLAINTS
-        // =========================
+        let pending = 0;
+        let inProgress = 0;
+        let resolved = 0;
 
         complaints.forEach(complaint => {
 
-
-            const complaintBox =
-                document.createElement("div");
-
-
-            complaintBox.className =
-                "complaint";
-
-
-            // Priority icon
-
-            let priorityIcon = "🟡";
-
-
-            if (complaint.priority === "High") {
-
-                priorityIcon = "🔴";
-
+            if (complaint.status === "Pending") {
+                pending++;
             }
 
-
-            if (complaint.priority === "Low") {
-
-                priorityIcon = "🟢";
-
+            if (complaint.status === "In Progress") {
+                inProgress++;
             }
 
+            if (complaint.status === "Resolved") {
+                resolved++;
+            }
 
-            complaintBox.innerHTML = `
+        });
+
+        dashboard.innerHTML = `
+            <div class="dashboard-box">
+
+                <div>
+                    <h3>Total Complaints</h3>
+                    <p>${complaints.length}</p>
+                </div>
+
+                <div>
+                    <h3>Pending</h3>
+                    <p>${pending}</p>
+                </div>
+
+                <div>
+                    <h3>In Progress</h3>
+                    <p>${inProgress}</p>
+                </div>
+
+                <div>
+                    <h3>Resolved</h3>
+                    <p>${resolved}</p>
+                </div>
+
+            </div>
+        `;
+
+        if (complaints.length === 0) {
+
+            complaintsDiv.innerHTML =
+                "<p>No complaints found.</p>";
+
+            return;
+        }
+
+        complaintsDiv.innerHTML = "";
+
+        complaints.forEach(complaint => {
+
+            const div = document.createElement("div");
+
+            div.className = "admin-complaint";
+
+            div.innerHTML = `
+
+                <hr>
 
                 <h3>
                     Complaint #${complaint.id}
                 </h3>
-
 
                 <p>
                     <strong>Name:</strong>
                     ${complaint.name}
                 </p>
 
-
                 <p>
                     <strong>Role:</strong>
                     ${complaint.role}
                 </p>
-
 
                 <p>
                     <strong>Category:</strong>
                     ${complaint.category}
                 </p>
 
-
                 <p>
                     <strong>Location:</strong>
                     ${complaint.location}
                 </p>
 
-
                 <p>
                     <strong>Priority:</strong>
-                    ${priorityIcon}
-                    ${complaint.priority || "Medium"}
+                    ${complaint.priority}
                 </p>
-
 
                 <p>
                     <strong>Description:</strong>
                     ${complaint.description}
                 </p>
 
-
                 <p>
-                    <strong>Current Status:</strong>
-
-                    <span id="current-status-${complaint.id}">
-                        ${complaint.status}
-                    </span>
-
+                    <strong>Status:</strong>
+                    ${complaint.status}
                 </p>
 
+                <label>
+                    Update Status:
+                </label>
 
                 <select
-                    id="status-${complaint.id}">
+                    onchange="updateStatus(${complaint.id}, this.value)"
+                >
 
-                    <option value="Pending">
+                    <option value="Pending"
+                        ${complaint.status === "Pending" ? "selected" : ""}>
                         Pending
                     </option>
 
-
-                    <option value="In Progress">
+                    <option value="In Progress"
+                        ${complaint.status === "In Progress" ? "selected" : ""}>
                         In Progress
                     </option>
 
-
-                    <option value="Resolved">
+                    <option value="Resolved"
+                        ${complaint.status === "Resolved" ? "selected" : ""}>
                         Resolved
                     </option>
 
                 </select>
 
-
-                <button
-                    type="button"
-                    onclick="updateStatus(${complaint.id})">
-
-                    Update Status
-
-                </button>
-
             `;
 
-
-            const select =
-                complaintBox.querySelector(
-                    `#status-${complaint.id}`
-                );
-
-
-            select.value =
-                complaint.status;
-
-
-            container.appendChild(
-                complaintBox
-            );
+            complaintsDiv.appendChild(div);
 
         });
 
-
     } catch (error) {
 
         console.error(error);
 
+        dashboard.innerHTML =
+            "<p>Cannot connect to the server.</p>";
 
-        container.innerHTML =
-            "<p>Unable to connect to the server.</p>";
-
+        complaintsDiv.innerHTML =
+            "";
     }
-
 }
 
 
-/* =========================
-   UPDATE STATISTICS
-========================= */
-
-function updateStatistics(complaints) {
-
-
-    let pending = 0;
-
-    let progress = 0;
-
-    let resolved = 0;
-
-
-    let highPriority = 0;
-
-    let mediumPriority = 0;
-
-    let lowPriority = 0;
-
-
-    complaints.forEach(complaint => {
-
-
-        // STATUS
-
-        if (complaint.status === "Pending") {
-
-            pending++;
-
-        }
-
-
-        if (complaint.status === "In Progress") {
-
-            progress++;
-
-        }
-
-
-        if (complaint.status === "Resolved") {
-
-            resolved++;
-
-        }
-
-
-        // PRIORITY
-
-        if (complaint.priority === "High") {
-
-            highPriority++;
-
-        }
-
-
-        else if (complaint.priority === "Low") {
-
-            lowPriority++;
-
-        }
-
-
-        else {
-
-            mediumPriority++;
-
-        }
-
-    });
-
-
-    // STATUS COUNTS
-
-    document.getElementById(
-        "totalComplaints"
-    ).textContent =
-        complaints.length;
-
-
-    document.getElementById(
-        "pendingComplaints"
-    ).textContent =
-        pending;
-
-
-    document.getElementById(
-        "progressComplaints"
-    ).textContent =
-        progress;
-
-
-    document.getElementById(
-        "resolvedComplaints"
-    ).textContent =
-        resolved;
-
-
-    // PRIORITY COUNTS
-
-    document.getElementById(
-        "highPriorityComplaints"
-    ).textContent =
-        highPriority;
-
-
-    document.getElementById(
-        "mediumPriorityComplaints"
-    ).textContent =
-        mediumPriority;
-
-
-    document.getElementById(
-        "lowPriorityComplaints"
-    ).textContent =
-        lowPriority;
-
-}
-
-
-/* =========================
-   UPDATE STATUS
-========================= */
-
-async function updateStatus(id) {
-
-
-    const select =
-        document.getElementById(
-            `status-${id}`
-        );
-
-
-    const button =
-        select.parentElement.querySelector(
-            "button"
-        );
-
-
-    const status =
-        select.value;
-
-
-    button.disabled = true;
-
-    button.textContent =
-        "Updating...";
-
+async function updateStatus(id, status) {
 
     try {
 
-
         const response = await fetch(
-
-            `http://localhost:3000/complaints/${id}`,
-
+            API + "/complaints/" + id,
             {
-
                 method: "PUT",
 
                 headers: {
-
-                    "Content-Type":
-                        "application/json"
-
+                    "Content-Type": "application/json"
                 },
 
                 body: JSON.stringify({
-
                     status: status
-
                 })
-
             }
-
         );
 
+        const data = await response.json();
 
-        const data =
-            await response.json();
+        if (response.ok) {
 
+            alert(
+                "Complaint status updated successfully!"
+            );
 
-        if (!response.ok) {
+            loadDashboard();
 
-            throw new Error(
+        } else {
+
+            alert(
                 data.message ||
-                "Update failed"
+                "Failed to update status."
             );
 
         }
 
-
-        // Update current status
-
-        document.getElementById(
-            `current-status-${id}`
-        ).textContent =
-            status;
-
-
-        button.textContent =
-            "Updated ✓";
-
-
-        // Refresh statistics only
-
-        const allComplaintsResponse =
-            await fetch(
-                "http://localhost:3000/complaints"
-            );
-
-
-        const allComplaints =
-            await allComplaintsResponse.json();
-
-
-        updateStatistics(
-            allComplaints
-        );
-
-
-        setTimeout(() => {
-
-            button.disabled = false;
-
-            button.textContent =
-                "Update Status";
-
-        }, 500);
-
-
     } catch (error) {
-
 
         console.error(error);
 
-
         alert(
-            "Unable to update Complaint #" +
-            id
+            "Cannot connect to the server."
         );
-
-
-        button.disabled = false;
-
-        button.textContent =
-            "Update Status";
-
     }
-
 }
 
 
-/* =========================
-   START DASHBOARD
-========================= */
-
-loadComplaints();
+loadDashboard();
