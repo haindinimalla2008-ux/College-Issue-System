@@ -1,4 +1,3 @@
-```javascript
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
@@ -15,7 +14,6 @@ const pool = new Pool({
     }
 });
 
-// Test database connection
 pool.connect()
     .then(client => {
         console.log("PostgreSQL database connected successfully!");
@@ -43,7 +41,6 @@ app.post("/complaints", async (req, res) => {
     } = req.body;
 
     try {
-
         const selectedPriority = priority || "Medium";
 
         const result = await pool.query(
@@ -67,7 +64,6 @@ app.post("/complaints", async (req, res) => {
         });
 
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
@@ -80,7 +76,6 @@ app.post("/complaints", async (req, res) => {
 app.get("/complaints", async (req, res) => {
 
     try {
-
         const result = await pool.query(
             "SELECT * FROM complaints ORDER BY created_at DESC"
         );
@@ -88,7 +83,6 @@ app.get("/complaints", async (req, res) => {
         res.json(result.rows);
 
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
@@ -101,7 +95,6 @@ app.get("/complaints", async (req, res) => {
 app.get("/complaints/:id", async (req, res) => {
 
     try {
-
         const result = await pool.query(
             "SELECT * FROM complaints WHERE id = $1",
             [req.params.id]
@@ -116,7 +109,6 @@ app.get("/complaints/:id", async (req, res) => {
         res.json(result.rows[0]);
 
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
@@ -143,7 +135,6 @@ app.put("/complaints/:id", async (req, res) => {
     }
 
     try {
-
         const result = await pool.query(
             `UPDATE complaints
              SET status = $1
@@ -164,7 +155,6 @@ app.put("/complaints/:id", async (req, res) => {
         });
 
     } catch (error) {
-
         console.error(error);
 
         res.status(500).json({
@@ -181,4 +171,3 @@ app.listen(PORT, () => {
         `College Issue Management System running on port ${PORT}`
     );
 });
-```
