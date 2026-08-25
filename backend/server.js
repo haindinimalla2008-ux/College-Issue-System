@@ -50,15 +50,11 @@ app.post("/complaints", async (req, res) => {
             category === "Water"
         ) {
             selectedPriority = "High";
-        }
-        else if (
+        } else if (
             category === "Infrastructure" ||
             category === "Academic"
         ) {
             selectedPriority = "Medium";
-        }
-        else {
-            selectedPriority = "Low";
         }
 
         const result = await pool.query(
@@ -142,7 +138,7 @@ app.get("/complaints/:id", async (req, res) => {
     }
 });
 
-// UPDATE COMPLAINT STATUS
+// UPDATE STATUS OR PRIORITY
 app.put("/complaints/:id", async (req, res) => {
 
     const { status, priority } = req.body;
@@ -159,43 +155,67 @@ app.put("/complaints/:id", async (req, res) => {
         "High"
     ];
 
-    // STATUS + PRIORITY UPDATE
-    if (
-        !allowedStatuses.includes(status) ||
-        !allowedPriorities.includes(priority)
-    ) {
-
-        return res.status(400).json({
-            message: "Invalid complaint status or priority"
-        });
-    }
-
     try {
 
-        const result = await pool.query(
-            `UPDATE complaints
-             SET status = $1,
-                 priority = $2
-             WHERE id = $3`,
-            [
-                status,
-                priority,
-                req.params.id
-            ]
+        // GET CURRENT COMPLAINT
+        const existing = await pool.query(
+            "SELECT status, priority FROM complaints WHERE id = $1",
+            [req.params.id]
         );
 
-        if (result.rowCount === 0) {
+        if (existing.rows.length === 0) {
 
             return res.status(404).json({
                 message: "Complaint not found"
             });
         }
 
+        const current = existing.rows[0];
+
+        // Keep existing value if not supplied
+        const newStatus = status || current.status;
+        const newPriority = priority || current.priority;
+
+        // Validate status if supplied
+        if (
+            status !== undefined &&
+            !allowedStatuses.includes(status)
+        ) {
+
+            return res.status(400).json({
+                message: "Invalid complaint status"
+            });
+        }
+
+        // Validate priority if supplied
+        if (
+            priority !== undefined &&
+            !allowedPriorities.includes(priority)
+        ) {
+
+            return res.status(400).json({
+                message: "Invalid complaint priority"
+            });
+        }
+
+        // UPDATE DATABASE
+        await pool.query(
+            `UPDATE complaints
+             SET status = $1,
+                 priority = $2
+             WHERE id = $3`,
+            [
+                newStatus,
+                newPriority,
+                req.params.id
+            ]
+        );
+
         res.json({
             message: "Complaint updated successfully!",
             complaintId: req.params.id,
-            status: status,
-            priority: priority
+            status: newStatus,
+            priority: newPriority
         });
 
     } catch (error) {
