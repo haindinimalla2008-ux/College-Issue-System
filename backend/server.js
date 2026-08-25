@@ -36,12 +36,30 @@ app.post("/complaints", async (req, res) => {
         role,
         category,
         location,
-        description,
-        priority
+        description
     } = req.body;
 
     try {
-        const selectedPriority = priority || "Medium";
+
+        // AUTOMATIC PRIORITY
+        let selectedPriority = "Low";
+
+        if (
+            category === "Safety" ||
+            category === "Electrical" ||
+            category === "Water"
+        ) {
+            selectedPriority = "High";
+        }
+        else if (
+            category === "Infrastructure" ||
+            category === "Academic"
+        ) {
+            selectedPriority = "Medium";
+        }
+        else {
+            selectedPriority = "Low";
+        }
 
         const result = await pool.query(
             `INSERT INTO complaints
@@ -60,10 +78,12 @@ app.post("/complaints", async (req, res) => {
 
         res.json({
             message: "Complaint saved successfully!",
-            complaintId: result.rows[0].id
+            complaintId: result.rows[0].id,
+            priority: selectedPriority
         });
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -76,6 +96,7 @@ app.post("/complaints", async (req, res) => {
 app.get("/complaints", async (req, res) => {
 
     try {
+
         const result = await pool.query(
             "SELECT * FROM complaints ORDER BY created_at DESC"
         );
@@ -83,6 +104,7 @@ app.get("/complaints", async (req, res) => {
         res.json(result.rows);
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -95,12 +117,14 @@ app.get("/complaints", async (req, res) => {
 app.get("/complaints/:id", async (req, res) => {
 
     try {
+
         const result = await pool.query(
             "SELECT * FROM complaints WHERE id = $1",
             [req.params.id]
         );
 
         if (result.rows.length === 0) {
+
             return res.status(404).json({
                 message: "Complaint not found"
             });
@@ -109,6 +133,7 @@ app.get("/complaints/:id", async (req, res) => {
         res.json(result.rows[0]);
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -120,7 +145,7 @@ app.get("/complaints/:id", async (req, res) => {
 // UPDATE COMPLAINT STATUS
 app.put("/complaints/:id", async (req, res) => {
 
-    const { status } = req.body;
+    const { status, priority } = req.body;
 
     const allowedStatuses = [
         "Pending",
@@ -128,37 +153,57 @@ app.put("/complaints/:id", async (req, res) => {
         "Resolved"
     ];
 
-    if (!allowedStatuses.includes(status)) {
+    const allowedPriorities = [
+        "Low",
+        "Medium",
+        "High"
+    ];
+
+    // STATUS + PRIORITY UPDATE
+    if (
+        !allowedStatuses.includes(status) ||
+        !allowedPriorities.includes(priority)
+    ) {
+
         return res.status(400).json({
-            message: "Invalid complaint status"
+            message: "Invalid complaint status or priority"
         });
     }
 
     try {
+
         const result = await pool.query(
             `UPDATE complaints
-             SET status = $1
-             WHERE id = $2`,
-            [status, req.params.id]
+             SET status = $1,
+                 priority = $2
+             WHERE id = $3`,
+            [
+                status,
+                priority,
+                req.params.id
+            ]
         );
 
         if (result.rowCount === 0) {
+
             return res.status(404).json({
                 message: "Complaint not found"
             });
         }
 
         res.json({
-            message: "Complaint status updated successfully!",
+            message: "Complaint updated successfully!",
             complaintId: req.params.id,
-            status: status
+            status: status,
+            priority: priority
         });
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
-            message: "Failed to update status"
+            message: "Failed to update complaint"
         });
     }
 });
@@ -167,6 +212,7 @@ app.put("/complaints/:id", async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
     console.log(
         `College Issue Management System running on port ${PORT}`
     );
