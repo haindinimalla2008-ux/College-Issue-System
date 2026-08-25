@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
 
 // SUBMIT COMPLAINT
 app.post("/complaints", async (req, res) => {
+
     const {
         name,
         role,
@@ -39,6 +40,7 @@ app.post("/complaints", async (req, res) => {
     } = req.body;
 
     try {
+
         let selectedPriority = "Low";
 
         if (
@@ -76,6 +78,7 @@ app.post("/complaints", async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -86,7 +89,9 @@ app.post("/complaints", async (req, res) => {
 
 // GET ALL COMPLAINTS
 app.get("/complaints", async (req, res) => {
+
     try {
+
         const result = await pool.query(
             "SELECT * FROM complaints ORDER BY created_at DESC"
         );
@@ -94,6 +99,7 @@ app.get("/complaints", async (req, res) => {
         res.json(result.rows);
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -104,13 +110,16 @@ app.get("/complaints", async (req, res) => {
 
 // GET COMPLAINT BY ID
 app.get("/complaints/:id", async (req, res) => {
+
     try {
+
         const result = await pool.query(
             "SELECT * FROM complaints WHERE id = $1",
             [req.params.id]
         );
 
         if (result.rows.length === 0) {
+
             return res.status(404).json({
                 message: "Complaint not found"
             });
@@ -119,6 +128,7 @@ app.get("/complaints/:id", async (req, res) => {
         res.json(result.rows[0]);
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -129,6 +139,7 @@ app.get("/complaints/:id", async (req, res) => {
 
 // UPDATE STATUS OR PRIORITY
 app.put("/complaints/:id", async (req, res) => {
+
     const { status, priority } = req.body;
 
     const allowedStatuses = [
@@ -144,12 +155,14 @@ app.put("/complaints/:id", async (req, res) => {
     ];
 
     try {
+
         const existing = await pool.query(
             "SELECT status, priority FROM complaints WHERE id = $1",
             [req.params.id]
         );
 
         if (existing.rows.length === 0) {
+
             return res.status(404).json({
                 message: "Complaint not found"
             });
@@ -164,6 +177,7 @@ app.put("/complaints/:id", async (req, res) => {
             status !== undefined &&
             !allowedStatuses.includes(status)
         ) {
+
             return res.status(400).json({
                 message: "Invalid complaint status"
             });
@@ -173,6 +187,7 @@ app.put("/complaints/:id", async (req, res) => {
             priority !== undefined &&
             !allowedPriorities.includes(priority)
         ) {
+
             return res.status(400).json({
                 message: "Invalid complaint priority"
             });
@@ -198,6 +213,7 @@ app.put("/complaints/:id", async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(error);
 
         res.status(500).json({
@@ -206,30 +222,11 @@ app.put("/complaints/:id", async (req, res) => {
     }
 });
 
-// TEMPORARY DELETE OLD COMPLAINTS
-app.delete("/delete-old-complaints", async (req, res) => {
-    try {
-        await pool.query(
-            "DELETE FROM complaints WHERE id IN (12, 13)"
-        );
-
-        res.json({
-            message: "Complaints 12 and 13 deleted successfully!"
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        res.status(500).json({
-            message: "Failed to delete complaints"
-        });
-    }
-});
-
 // START SERVER
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
     console.log(
         `College Issue Management System running on port ${PORT}`
     );
