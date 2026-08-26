@@ -15,20 +15,178 @@ const pool = new Pool({
 });
 
 pool.connect()
-    .then(client => {
+    .then(async client => {
         console.log("PostgreSQL database connected successfully!");
+
+        // Make sure urgency column exists
+        await client.query(`
+            ALTER TABLE complaints
+            ADD COLUMN IF NOT EXISTS urgency VARCHAR(20) DEFAULT 'Normal'
+        `);
+
         client.release();
+
+        console.log("Urgency column checked successfully!");
     })
     .catch(error => {
         console.error("Database connection failed:", error.message);
     });
 
+
+// -----------------------------------------
+// SMART PRIORITY
+// -----------------------------------------
+function calculatePriority(category, description) {
+
+    const categoryText = String(category || "").toLowerCase();
+    const descriptionText = String(description || "").toLowerCase();
+
+    const text = `${categoryText} ${descriptionText}`;
+
+    // Very serious issues
+    const highKeywords = [
+        "fire",
+        "smoke",
+        "spark",
+        "sparks",
+        "electric shock",
+        "short circuit",
+        "exposed wire",
+        "danger",
+        "dangerous",
+        "accident",
+        "emergency",
+        "injury",
+        "injured",
+        "life risk",
+        "gas leak",
+        "flood"
+    ];
+
+    if (
+        categoryText === "safety" ||
+        categoryText === "electrical" ||
+        categoryText === "water" ||
+        highKeywords.some(word => text.includes(word))
+    ) {
+        return "High";
+    }
+
+    const mediumKeywords = [
+        "broken",
+        "damaged",
+        "leak",
+        "not working",
+        "problem",
+        "issue",
+        "repair",
+        "computer",
+        "projector",
+        "classroom"
+    ];
+
+    if (
+        categoryText === "infrastructure" ||
+        categoryText === "academic" ||
+        mediumKeywords.some(word => text.includes(word))
+    ) {
+        return "Medium";
+    }
+
+    return "Low";
+}
+
+
+// -----------------------------------------
+// SMART URGENCY
+// -----------------------------------------
+function calculateUrgency(category, description) {
+
+    const categoryText = String(category || "").toLowerCase();
+    const descriptionText = String(description || "").toLowerCase();
+
+    const text = `${categoryText} ${descriptionText}`;
+
+    // IMMEDIATE
+    const immediateKeywords = [
+        "fire",
+        "smoke",
+        "short circuit",
+        "electric shock",
+        "exposed wire",
+        "sparks",
+        "spark",
+        "emergency",
+        "danger",
+        "dangerous",
+        "life risk",
+        "injury",
+        "injured",
+        "gas leak",
+        "flood",
+        "accident"
+    ];
+
+    if (
+        immediateKeywords.some(word => text.includes(word))
+    ) {
+        return "Immediate";
+    }
+
+    // SOON
+    const soonKeywords = [
+        "leak",
+        "leaking",
+        "broken",
+        "damaged",
+        "not working",
+        "problem",
+        "issue",
+        "repair",
+        "water problem",
+        "fan",
+        "light",
+        "projector",
+        "computer"
+    ];
+
+    if (
+        soonKeywords.some(word => text.includes(word))
+    ) {
+        return "Soon";
+    }
+
+    // Category-based urgency
+    if (
+        categoryText === "safety"
+    ) {
+        return "Immediate";
+    }
+
+    if (
+        categoryText === "electrical" ||
+        categoryText === "water"
+    ) {
+        return "Soon";
+    }
+
+    return "Normal";
+}
+
+
+// -----------------------------------------
 // HOME
+// -----------------------------------------
 app.get("/", (req, res) => {
-    res.send("College Issue Management System Backend is running!");
+    res.send(
+        "College Issue Management System Backend is running!"
+    );
 });
 
+
+// -----------------------------------------
 // SUBMIT COMPLAINT
+// -----------------------------------------
 app.post("/complaints", async (req, res) => {
 
     const {
@@ -41,25 +199,24 @@ app.post("/complaints", async (req, res) => {
 
     try {
 
-        let selectedPriority = "Low";
+        const selectedPriority =
+            calculatePriority(category, description);
 
-        if (
-            category === "Safety" ||
-            category === "Electrical" ||
-            category === "Water"
-        ) {
-            selectedPriority = "High";
-        } else if (
-            category === "Infrastructure" ||
-            category === "Academic"
-        ) {
-            selectedPriority = "Medium";
-        }
+        const selectedUrgency =
+            calculateUrgency(category, description);
 
         const result = await pool.query(
             `INSERT INTO complaints
-            (name, role, category, location, description, priority)
-            VALUES ($1, $2, $3, $4, $5, $6)
+            (
+                name,
+                role,
+                category,
+                location,
+                description,
+                priority,
+                urgency
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id`,
             [
                 name,
@@ -67,14 +224,16 @@ app.post("/complaints", async (req, res) => {
                 category,
                 location,
                 description,
-                selectedPriority
+                selectedPriority,
+                selectedUrgency
             ]
         );
 
         res.json({
             message: "Complaint saved successfully!",
             complaintId: result.rows[0].id,
-            priority: selectedPriority
+            priority: selectedPriority,
+            urgency: selectedUrgency
         });
 
     } catch (error) {
@@ -87,13 +246,18 @@ app.post("/complaints", async (req, res) => {
     }
 });
 
+
+// -----------------------------------------
 // GET ALL COMPLAINTS
+// -----------------------------------------
 app.get("/complaints", async (req, res) => {
 
     try {
 
         const result = await pool.query(
-            "SELECT * FROM complaints ORDER BY created_at DESC"
+            `SELECT *
+             FROM complaints
+             ORDER BY created_at DESC`
         );
 
         res.json(result.rows);
@@ -108,7 +272,10 @@ app.get("/complaints", async (req, res) => {
     }
 });
 
+
+// -----------------------------------------
 // GET COMPLAINT BY ID
+// -----------------------------------------
 app.get("/complaints/:id", async (req, res) => {
 
     try {
@@ -137,7 +304,10 @@ app.get("/complaints/:id", async (req, res) => {
     }
 });
 
+
+// -----------------------------------------
 // UPDATE STATUS OR PRIORITY
+// -----------------------------------------
 app.put("/complaints/:id", async (req, res) => {
 
     const { status, priority } = req.body;
@@ -157,7 +327,9 @@ app.put("/complaints/:id", async (req, res) => {
     try {
 
         const existing = await pool.query(
-            "SELECT status, priority FROM complaints WHERE id = $1",
+            `SELECT status, priority, urgency
+             FROM complaints
+             WHERE id = $1`,
             [req.params.id]
         );
 
@@ -170,8 +342,14 @@ app.put("/complaints/:id", async (req, res) => {
 
         const current = existing.rows[0];
 
-        const newStatus = status || current.status;
-        const newPriority = priority || current.priority;
+        const newStatus =
+            status || current.status;
+
+        const newPriority =
+            priority || current.priority;
+
+        const newUrgency =
+            current.urgency || "Normal";
 
         if (
             status !== undefined &&
@@ -209,7 +387,8 @@ app.put("/complaints/:id", async (req, res) => {
             message: "Complaint updated successfully!",
             complaintId: req.params.id,
             status: newStatus,
-            priority: newPriority
+            priority: newPriority,
+            urgency: newUrgency
         });
 
     } catch (error) {
@@ -222,7 +401,10 @@ app.put("/complaints/:id", async (req, res) => {
     }
 });
 
+
+// -----------------------------------------
 // START SERVER
+// -----------------------------------------
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
