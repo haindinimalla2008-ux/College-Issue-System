@@ -14,16 +14,153 @@ const pool = new Pool({
     }
 });
 
+
+// SMART PRIORITY
+function calculatePriority(category, description) {
+
+    const categoryText = String(category || "").toLowerCase();
+    const descriptionText = String(description || "").toLowerCase();
+
+    const text = `${categoryText} ${descriptionText}`;
+
+    const highKeywords = [
+        "fire",
+        "smoke",
+        "spark",
+        "sparks",
+        "electric shock",
+        "short circuit",
+        "exposed wire",
+        "danger",
+        "dangerous",
+        "accident",
+        "emergency",
+        "injury",
+        "injured",
+        "life risk",
+        "gas leak",
+        "flood"
+    ];
+
+    if (
+        categoryText === "safety" ||
+        categoryText === "electrical" ||
+        categoryText === "water" ||
+        highKeywords.some(word => text.includes(word))
+    ) {
+        return "High";
+    }
+
+    const mediumKeywords = [
+        "broken",
+        "damaged",
+        "leak",
+        "not working",
+        "problem",
+        "issue",
+        "repair",
+        "computer",
+        "projector",
+        "classroom"
+    ];
+
+    if (
+        categoryText === "infrastructure" ||
+        categoryText === "academic" ||
+        mediumKeywords.some(word => text.includes(word))
+    ) {
+        return "Medium";
+    }
+
+    return "Low";
+}
+
+
+// SMART URGENCY
+function calculateUrgency(category, description) {
+
+    const categoryText = String(category || "").toLowerCase();
+    const descriptionText = String(description || "").toLowerCase();
+
+    const text = `${categoryText} ${descriptionText}`;
+
+    const immediateKeywords = [
+        "fire",
+        "smoke",
+        "short circuit",
+        "electric shock",
+        "exposed wire",
+        "sparks",
+        "spark",
+        "emergency",
+        "danger",
+        "dangerous",
+        "life risk",
+        "injury",
+        "injured",
+        "gas leak",
+        "flood",
+        "accident"
+    ];
+
+    if (
+        immediateKeywords.some(word => text.includes(word))
+    ) {
+        return "Immediate";
+    }
+
+    const soonKeywords = [
+        "leak",
+        "leaking",
+        "broken",
+        "damaged",
+        "not working",
+        "problem",
+        "issue",
+        "repair",
+        "water problem",
+        "fan",
+        "light",
+        "projector",
+        "computer"
+    ];
+
+    if (
+        soonKeywords.some(word => text.includes(word))
+    ) {
+        return "Soon";
+    }
+
+    if (categoryText === "safety") {
+        return "Immediate";
+    }
+
+    if (
+        categoryText === "electrical" ||
+        categoryText === "water"
+    ) {
+        return "Soon";
+    }
+
+    return "Normal";
+}
+
+
+// DATABASE CONNECTION
 pool.connect()
     .then(async client => {
-        console.log("PostgreSQL database connected successfully!");
+
+        console.log(
+            "PostgreSQL database connected successfully!"
+        );
 
         await client.query(`
             ALTER TABLE complaints
-            ADD COLUMN IF NOT EXISTS urgency VARCHAR(20) DEFAULT 'Normal'
+            ADD COLUMN IF NOT EXISTS urgency VARCHAR(20)
+            DEFAULT 'Normal'
         `);
 
-        // Fix urgency for all existing complaints
+        // Automatically fix urgency of existing complaints
         await client.query(`
             UPDATE complaints
             SET urgency =
@@ -65,170 +202,30 @@ pool.connect()
                 END
         `);
 
-        console.log("Existing complaint urgency updated!");
+        console.log(
+            "Existing complaint urgency updated!"
+        );
 
         client.release();
+
     })
     .catch(error => {
+
         console.error(
             "Database connection failed:",
             error.message
         );
+
     });
-
-
-// SMART PRIORITY
-function calculatePriority(category, description) {
-
-    const categoryText =
-        String(category || "").toLowerCase();
-
-    const descriptionText =
-        String(description || "").toLowerCase();
-
-    const text =
-        `${categoryText} ${descriptionText}`;
-
-    const highKeywords = [
-        "fire",
-        "smoke",
-        "spark",
-        "sparks",
-        "electric shock",
-        "short circuit",
-        "exposed wire",
-        "danger",
-        "dangerous",
-        "accident",
-        "emergency",
-        "injury",
-        "injured",
-        "life risk",
-        "gas leak",
-        "flood"
-    ];
-
-    if (
-        categoryText === "safety" ||
-        categoryText === "electrical" ||
-        categoryText === "water" ||
-        highKeywords.some(word =>
-            text.includes(word)
-        )
-    ) {
-        return "High";
-    }
-
-    const mediumKeywords = [
-        "broken",
-        "damaged",
-        "leak",
-        "not working",
-        "problem",
-        "issue",
-        "repair",
-        "computer",
-        "projector",
-        "classroom"
-    ];
-
-    if (
-        categoryText === "infrastructure" ||
-        categoryText === "academic" ||
-        mediumKeywords.some(word =>
-            text.includes(word)
-        )
-    ) {
-        return "Medium";
-    }
-
-    return "Low";
-}
-
-
-// SMART URGENCY
-function calculateUrgency(category, description) {
-
-    const categoryText =
-        String(category || "").toLowerCase();
-
-    const descriptionText =
-        String(description || "").toLowerCase();
-
-    const text =
-        `${categoryText} ${descriptionText}`;
-
-    const immediateKeywords = [
-        "fire",
-        "smoke",
-        "short circuit",
-        "electric shock",
-        "exposed wire",
-        "sparks",
-        "spark",
-        "emergency",
-        "danger",
-        "dangerous",
-        "life risk",
-        "injury",
-        "injured",
-        "gas leak",
-        "flood",
-        "accident"
-    ];
-
-    if (
-        immediateKeywords.some(word =>
-            text.includes(word)
-        )
-    ) {
-        return "Immediate";
-    }
-
-    const soonKeywords = [
-        "leak",
-        "leaking",
-        "broken",
-        "damaged",
-        "not working",
-        "problem",
-        "issue",
-        "repair",
-        "water problem",
-        "fan",
-        "light",
-        "projector",
-        "computer"
-    ];
-
-    if (
-        soonKeywords.some(word =>
-            text.includes(word)
-        )
-    ) {
-        return "Soon";
-    }
-
-    if (categoryText === "safety") {
-        return "Immediate";
-    }
-
-    if (
-        categoryText === "electrical" ||
-        categoryText === "water"
-    ) {
-        return "Soon";
-    }
-
-    return "Normal";
-}
 
 
 // HOME
 app.get("/", (req, res) => {
+
     res.send(
         "College Issue Management System Backend is running!"
     );
+
 });
 
 
@@ -283,14 +280,19 @@ app.post("/complaints", async (req, res) => {
         );
 
         res.json({
+
             message:
                 "Complaint saved successfully!",
+
             complaintId:
                 result.rows[0].id,
+
             priority:
                 selectedPriority,
+
             urgency:
                 selectedUrgency
+
         });
 
     } catch (error) {
@@ -298,10 +300,14 @@ app.post("/complaints", async (req, res) => {
         console.error(error);
 
         res.status(500).json({
+
             message:
                 "Failed to save complaint"
+
         });
+
     }
+
 });
 
 
@@ -323,10 +329,14 @@ app.get("/complaints", async (req, res) => {
         console.error(error);
 
         res.status(500).json({
+
             message:
                 "Failed to get complaints"
+
         });
+
     }
+
 });
 
 
@@ -343,9 +353,12 @@ app.get("/complaints/:id", async (req, res) => {
         if (result.rows.length === 0) {
 
             return res.status(404).json({
+
                 message:
                     "Complaint not found"
+
             });
+
         }
 
         res.json(result.rows[0]);
@@ -355,10 +368,14 @@ app.get("/complaints/:id", async (req, res) => {
         console.error(error);
 
         res.status(500).json({
+
             message:
                 "Failed to find complaint"
+
         });
+
     }
+
 });
 
 
@@ -398,9 +415,12 @@ app.put("/complaints/:id", async (req, res) => {
         if (existing.rows.length === 0) {
 
             return res.status(404).json({
+
                 message:
                     "Complaint not found"
+
             });
+
         }
 
         const current =
@@ -422,20 +442,28 @@ app.put("/complaints/:id", async (req, res) => {
             status !== undefined &&
             !allowedStatuses.includes(status)
         ) {
+
             return res.status(400).json({
+
                 message:
                     "Invalid complaint status"
+
             });
+
         }
 
         if (
             priority !== undefined &&
             !allowedPriorities.includes(priority)
         ) {
+
             return res.status(400).json({
+
                 message:
                     "Invalid complaint priority"
+
             });
+
         }
 
         await pool.query(
@@ -454,16 +482,22 @@ app.put("/complaints/:id", async (req, res) => {
         );
 
         res.json({
+
             message:
                 "Complaint updated successfully!",
+
             complaintId:
                 req.params.id,
+
             status:
                 newStatus,
+
             priority:
                 newPriority,
+
             urgency:
                 newUrgency
+
         });
 
     } catch (error) {
@@ -471,10 +505,46 @@ app.put("/complaints/:id", async (req, res) => {
         console.error(error);
 
         res.status(500).json({
+
             message:
                 "Failed to update complaint"
+
         });
+
     }
+
+});
+
+
+// TEMPORARY: DELETE ALL COMPLAINTS
+app.delete("/complaints", async (req, res) => {
+
+    try {
+
+        await pool.query(
+            "DELETE FROM complaints"
+        );
+
+        res.json({
+
+            message:
+                "All complaints deleted successfully!"
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            message:
+                "Failed to delete complaints"
+
+        });
+
+    }
+
 });
 
 
@@ -487,4 +557,5 @@ app.listen(PORT, () => {
     console.log(
         `College Issue Management System running on port ${PORT}`
     );
+
 });
